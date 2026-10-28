@@ -1,6 +1,6 @@
 # Entrelinhas
 
-Editor pessoal de conversas fictícias, estático e compatível com GitHub Pages. Interface em português, personagens, conversas, mensagens recebidas/enviadas, edição/exclusão, horário e modo print. Escreva diretamente no campo da conversa. Segure uma mensagem para escolher quem enviou, editar ou excluir. O botão + permite anexar JPG, PNG ou WebP de até 12 MB; o app reduz a imagem para até 1280 px antes de salvar. Imagens ficam junto das conversas no mesmo JSON protegido do Supabase, sem bucket adicional. Configure o horário e o remetente padrão em Configurações gerais. Use captura de tela no modo print.
+Editor pessoal de conversas fictícias, estático e compatível com GitHub Pages. Interface em português, personagens, conversas, mensagens recebidas/enviadas, edição/exclusão, horário e modo print. Escreva diretamente no campo da conversa. Segure uma mensagem para escolher quem enviou, editar ou excluir. O botão + permite anexar JPG, PNG ou WebP de até 12 MB; o app reduz a imagem para até 1280 px antes de salvar. Imagens ficam junto das conversas no mesmo JSON protegido do Supabase, sem bucket adicional. Configure o horário e o remetente padrão em Configurações gerais. Use Salvar imagem para gerar PNGs da conversa completa, com fotos e detalhes, sem controles do editor. Conversas extensas são divididas em partes para respeitar os limites de memória dos celulares. O arquivo export.js deve ser publicado junto de app.js, index.html e style.css.
 
 ## Experimentar
 
@@ -27,3 +27,13 @@ O site é público; as conversas na nuvem exigem autenticação.
 ## Estado de validação
 
 Conexão real e políticas precisam ser verificadas após configurar seu projeto Supabase. Não foram fornecidas credenciais nesta conversa.
+
+## Novas funções
+
+- Reorganizar: ative o botão no telefone, arraste a mensagem e toque em Concluir. O histórico rola automaticamente ao arrastar perto das bordas. Também é possível usar as setas do teclado no modo de reorganização ou Subir/Descer nas opções de mensagem.
+- Configurações gerais → Tema: claro ou escuro, aplicado à interface e à exportação.
+- Configurações gerais → Detalhes: status Entregue/Lido, indicador de digitação e data inicial opcionais. O status é exibido se a última mensagem for sua.
+- Segure uma mensagem para adicionar um separador de data antes dela.
+- Salvar imagem: gera os arquivos localmente no navegador e disponibiliza os links para baixar. As imagens não são enviadas a serviços de exportação.
+
+Atualizações: publique index.html, app.js, style.css e export.js. Preserve o config.js que já contém sua configuração. Não é necessário alterar a tabela SQL existente.

@@ -1,0 +1,27 @@
+// Exportação local em Canvas: sem capturar botões, sem serviço externo.
+export async function exportConversation(conversation,person,settings){
+ const dark=settings.theme==='dark',colors=dark?{bg:'#000000',header:'#19191b',text:'#ffffff',muted:'#9b9ba2',received:'#29292c',blue:'#1685f8',border:'#38383a'}:{bg:'#ffffff',header:'#f7f7f8',text:'#111111',muted:'#85858b',received:'#e9e9eb',blue:'#1685f8',border:'#dddddf'};
+ const measure=document.createElement('canvas').getContext('2d');measure.font='16px Arial';
+ const images=new Map();async function load(src){if(!src)return null;if(!images.has(src))images.set(src,new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Uma das imagens não pôde ser carregada.'));image.src=src;}));return images.get(src);}
+ const wrap=text=>{const lines=[];for(const paragraph of String(text||'').split('\n')){let line='';for(const char of Array.from(paragraph)){if(measure.measureText(line+char).width>266&&line){lines.push(line);line=char;}else line+=char;}lines.push(line);}return lines;};
+ const rows=[{kind:'date',text:settings.dateLabel||'iMessage',height:36}];
+ await load(person?.photo);
+ for(const message of conversation.messages){if(message.separator)rows.push({kind:'date',text:message.separator,height:38});const image=await load(message.image),scale=image?Math.min(1,278/image.naturalWidth,270/image.naturalHeight):0;const imageWidth=image?image.naturalWidth*scale:0,imageHeight=image?image.naturalHeight*scale:0;const lines=message.text?wrap(message.text):[];const pieces=Math.max(1,Math.ceil(lines.length/70));for(let part=0;part<pieces;part++){const partLines=lines.slice(part*70,(part+1)*70),hasImage=part===0&&image;rows.push({kind:'bubble',sender:message.sender,lines:partLines,image:hasImage?image:null,imageWidth:hasImage?imageWidth:0,imageHeight:hasImage?imageHeight:0,height:20+(hasImage?imageHeight:0)+(hasImage&&partLines.length?8:0)+partLines.length*21+7});}}
+ if(conversation.messages.at(-1)?.sender==='me'&&settings.receipt!=='none')rows.push({kind:'receipt',text:settings.receipt==='read'?'Lido '+settings.time:'Entregue',height:23});
+ if(settings.typing)rows.push({kind:'typing',height:46});
+ const pages=[];let current=[],height=0;for(const row of rows){if(height+row.height>2150&&current.length){pages.push(current);current=[];height=0;}current.push(row);height+=row.height;}if(current.length)pages.push(current);
+ const outputs=[];
+ for(let pageIndex=0;pageIndex<pages.length;pageIndex++){
+ const content=pages[pageIndex],height=Math.max(610,155+content.reduce((n,r)=>n+r.height,0)+65),canvas=document.createElement('canvas');canvas.width=780;canvas.height=Math.ceil(height*2);const ctx=canvas.getContext('2d');ctx.scale(2,2);
+ const rounded=(x,y,w,h,r,fill)=>{ctx.fillStyle=fill;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();};
+ const text=(value,x,y,size,color,align='left',weight='normal')=>{ctx.font=`${weight} ${size}px Arial`;ctx.fillStyle=color;ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.fillText(value,x,y);};
+ ctx.fillStyle=colors.bg;ctx.fillRect(0,0,390,height);ctx.fillStyle=colors.header;ctx.fillRect(0,0,390,140);
+ text(settings.time,29,28,14,colors.text,'left','bold');text('▮▮▮  ▰',358,28,12,colors.text,'right');text('‹',18,85,36,colors.blue);
+ const avatar=await load(person?.photo);if(avatar){ctx.save();ctx.beginPath();ctx.arc(195,69,23,0,Math.PI*2);ctx.clip();ctx.drawImage(avatar,172,46,46,46);ctx.restore();}else{rounded(172,46,46,46,23,'#abb5bc');text((person?.name||'?').slice(0,1).toUpperCase(),195,77,23,'white','center');}
+ text(person?.name||'Contato',195,111,13,colors.text,'center','bold');text('›',195,128,12,colors.muted,'center');ctx.fillStyle=colors.border;ctx.fillRect(0,139,390,1);
+ let y=147;for(const row of content){if(row.kind==='date'){text(row.text.length>58?row.text.slice(0,57)+'…':row.text,195,y+23,11,colors.muted,'center');}else if(row.kind==='receipt'){text(row.text,376,y+13,10,colors.muted,'right');}else if(row.kind==='typing'){rounded(14,y+4,65,32,17,colors.received);for(let i=0;i<3;i++)rounded(28+i*14,y+17,8,8,4,colors.muted);}else{ctx.font='16px Arial';const textWidth=Math.max(0,...row.lines.map(l=>ctx.measureText(l).width)),width=Math.max(40,textWidth+24,row.imageWidth?row.imageWidth+12:0),x=row.sender==='me'?376-width:14,bubbleHeight=row.height-7;rounded(x,y,width,bubbleHeight,17,row.sender==='me'?colors.blue:colors.received);let lineY=y+20;if(row.image){ctx.save();ctx.beginPath();ctx.roundRect(x+(width-row.imageWidth)/2,y+6,row.imageWidth,row.imageHeight,11);ctx.clip();ctx.drawImage(row.image,x+(width-row.imageWidth)/2,y+6,row.imageWidth,row.imageHeight);ctx.restore();lineY=y+row.imageHeight+26;}for(const line of row.lines){text(line,x+12,lineY,16,row.sender==='me'?'#ffffff':colors.text);lineY+=21;}}y+=row.height;}
+ const footerY=height-46;ctx.strokeStyle=colors.border;ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(45,footerY-11,327,31,16);ctx.stroke();text('+',20,footerY+12,25,colors.muted,'center');text('iMessage',58,footerY+9,13,colors.muted);rounded(137,height-12,116,4,2,colors.text);
+ const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('Não foi possível gerar a imagem.');outputs.push({blob,name:(conversation.name||'conversa').replace(/[^\p{L}\p{N}_-]+/gu,'-').slice(0,70)+(pages.length>1?`-${pageIndex+1}`:'')+'.png'});canvas.width=canvas.height=1;
+ }
+ return outputs;
+}
