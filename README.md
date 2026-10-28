@@ -37,3 +37,5 @@ Conexão real e políticas precisam ser verificadas após configurar seu projeto
 - Salvar imagem: gera os arquivos localmente no navegador e disponibiliza os links para baixar. As imagens não são enviadas a serviços de exportação.
 
 Atualizações: publique index.html, app.js, style.css e export.js. Preserve o config.js que já contém sua configuração. Não é necessário alterar a tabela SQL existente.
+
+Envio: toque curto na seta envia com o remetente atual. Segure a seta por meio segundo para abrir a escolha de remetente; selecionar envia a mensagem. Cancelar mantém o rascunho. Sem mensagem, a escolha apenas define o remetente das próximas mensagens. Pelo teclado, a seta para cima no botão de envio abre o mesmo menu.

@@ -25,8 +25,8 @@ function render(){const c=chat();$('list').replaceChildren();for(const item of s
  $('reorder').setAttribute('aria-pressed',String(reorderMode));$('reorder').textContent=reorderMode?'✓ Concluir':'↕ Reorganizar';$('reorder').disabled=!c;$('exportImage').disabled=!c;document.querySelector('.phone').classList.toggle('reordering',reorderMode);
  for(const id of ['name','contact','message','send','remove','attach'])$(id).disabled=!c;
  $('senderHint').textContent='Enviando como '+(settings().sender==='them'?(p?.name||'contato'):'você');
- $('senderThem').textContent=p?.name||'Contato';
- for(const [id,sender] of [['senderMe','me'],['senderThem','them']]){$(id).setAttribute('aria-pressed',String(settings().sender===sender));$(id).disabled=!c;}
+ $('chooseThem').textContent='Enviar como '+(p?.name||'contato');
+ $('send').title='Toque para enviar. Segure para escolher quem envia.';
 }
 $('reorder').onclick=()=>{reorderMode=!reorderMode;render();};
 let exportUrls=[];
@@ -45,12 +45,26 @@ function modal(html){$('message').blur();$('modal').innerHTML=html;positionDialo
 window.addEventListener('resize',positionDialog);
 function fitViewport(){document.documentElement.style.setProperty('--app-height',(window.visualViewport?.height||window.innerHeight)+'px');if($('dialog').open)requestAnimationFrame(positionDialog);}
 window.visualViewport?.addEventListener('resize',fitViewport);fitViewport();
-for(const [id,sender] of [['senderMe','me'],['senderThem','them']]){$(id).onpointerdown=e=>e.preventDefault();$(id).onclick=()=>{if(!chat()||busy)return;change(()=>state.settings={...settings(),sender});};}
+function closeSenderPicker(){$('senderPicker').hidden=true;$('send').setAttribute('aria-expanded','false');}
+function openSenderPicker(){if(!chat()||busy||imageLoading)return;$('senderPicker').hidden=false;$('send').setAttribute('aria-expanded','true');}
+let sendHoldTimer=null,sendHeld=false,sendStart=null;
+const cancelSendHold=()=>{clearTimeout(sendHoldTimer);sendHoldTimer=null;};
+$('send').onpointerdown=e=>{if(e.button!==0)return;e.preventDefault();cancelSendHold();sendHeld=false;sendStart={x:e.clientX,y:e.clientY};sendHoldTimer=setTimeout(()=>{sendHeld=true;openSenderPicker();},500);};
+$('send').onpointermove=e=>{if(sendStart&&Math.hypot(e.clientX-sendStart.x,e.clientY-sendStart.y)>12){cancelSendHold();sendHeld=true;}};
+for(const event of ['pointerup','pointerleave','pointercancel'])$('send').addEventListener(event,cancelSendHold);
+$('send').onclick=e=>{e.preventDefault();if(sendHeld){sendHeld=false;return;}closeSenderPicker();sendMessage();};
+$('send').oncontextmenu=e=>{e.preventDefault();cancelSendHold();sendHeld=true;openSenderPicker();};
+$('send').onkeydown=e=>{if(e.key==='ArrowUp'||(e.altKey&&e.key==='Enter')){e.preventDefault();openSenderPicker();$('chooseMe').focus();}if(e.key==='Escape')closeSenderPicker();};
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#senderPicker')&&!e.target.closest('#send'))closeSenderPicker();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSenderPicker();});
+for(const [id,sender] of [['chooseMe','me'],['chooseThem','them']])$(id).onclick=()=>{closeSenderPicker();sendMessage(sender);};
+$('cancelSender').onclick=closeSenderPicker;
 $('phoneSettings').onclick=()=>{const c=chat();modal(`<h2>Opções da conversa</h2>${c?`<label>Nome da conversa<input id="phoneName" maxlength="100" value="${esc(c.name)}"></label><label>Personagem<select id="phoneContact">${state.people.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select></label><button id="saveConversation">Salvar conversa</button>`:'<p>Crie uma conversa para começar.</p>'}<div class="phone-menu"><button id="menuPeople">Personagens e fotos</button><button id="menuSettings">Configurações gerais</button><button id="menuPrint">Modo print</button><button id="menuAccount">Minha conta / Entrar</button><button id="menuDelete">Excluir conversa</button></div>`);if(c){$('phoneContact').value=c.person;$('saveConversation').onclick=async()=>{if(busy)return;const name=$('phoneName').value.trim()||'Sem título',person=$('phoneContact').value;await change(()=>Object.assign(c,{name,person}));$('dialog').close();};}$('menuAccount').onclick=()=>$('account').click();$('menuDelete').onclick=()=>{if(!chat())return;$('remove').click();$('dialog').close();};$('menuPeople').onclick=showPeople;$('menuSettings').onclick=()=>$('settings').click();$('menuPrint').onclick=()=>{$('dialog').close();$('preview').click();};};
 $('new').onclick=()=>change(()=>{if(!state.people.length)state.people.push({id:uid(),name:'Contato'});const c={id:uid(),name:'Nova conversa',person:state.people[0].id,messages:[]};state.chats.push(c);selected=c.id;clearAttachment();});
 $('name').onchange=()=>change(()=>chat().name=$('name').value.trim()||'Sem título');
 $('contact').onchange=()=>change(()=>chat().person=$('contact').value);
-$('composer').onsubmit=async e=>{e.preventDefault();const text=$('message').value.trim();if((!text&&!pendingImage)||!chat()||busy||imageLoading)return;await change(()=>{chat().messages.push({id:uid(),text,image:pendingImage,sender:settings().sender,time:settings().time});$('message').value='';clearAttachment();});$('messages').scrollTop=$('messages').scrollHeight;$('message').focus();};
+async function sendMessage(sender=settings().sender){if(!chat()||busy||imageLoading)return;const text=$('message').value.trim();if(!text&&!pendingImage){await change(()=>state.settings={...settings(),sender});return;}await change(()=>{state.settings={...settings(),sender};chat().messages.push({id:uid(),text,image:pendingImage,sender,time:settings().time});$('message').value='';clearAttachment();});$('messages').scrollTop=$('messages').scrollHeight;$('message').focus();}
+$('composer').onsubmit=e=>{e.preventDefault();closeSenderPicker();sendMessage();};
 $('message').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&window.matchMedia('(pointer:fine)').matches){e.preventDefault();$('composer').requestSubmit();}};
 function clearAttachment(){pendingImage=null;$('attachmentPreview').hidden=true;$('attachmentPreview').replaceChildren();$('imageFile').value='';}
 $('attach').onclick=()=>$('imageFile').click();
