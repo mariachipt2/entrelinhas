@@ -45,3 +45,6 @@ Interface: o site abre na lista de conversas. Toque em um contato para abrir o c
 
 Inserir fala: segure uma mensagem e escolha Adicionar antes ou Adicionar depois. Digite no campo habitual e envie; a nova fala entra na posição escolhida. O aviso acima do campo permite cancelar a inserção sem apagar o rascunho. Também funciona com imagens e com a escolha de remetente ao segurar a seta.
 
+
+Salvar tela atual captura o trecho visível e a rolagem, sem os controles de edição e sem barras nativas do navegador/sistema. A biblioteca html2canvas 1.4.1 está incluída em vendor com licença MIT. Publique a pasta vendor, manifest.webmanifest e icon-192.png / icon-512.png junto dos arquivos do app. Tela cheia exige gesto do usuário; use o botão na lista ou nas opções do chat. O manifesto solicita fullscreen ao abrir pelo atalho instalado, mas o suporte e a barra de status dependem do aparelho/navegador. Não há promessa de ocultar a barra nativa no iPhone.
+
