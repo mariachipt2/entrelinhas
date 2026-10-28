@@ -33,7 +33,7 @@ $('phoneSettings').onclick=()=>{const c=chat();modal(`<h2>Opções da conversa</
 $('new').onclick=()=>change(()=>{if(!state.people.length)state.people.push({id:uid(),name:'Contato'});const c={id:uid(),name:'Nova conversa',person:state.people[0].id,messages:[]};state.chats.push(c);selected=c.id;clearAttachment();});
 $('name').onchange=()=>change(()=>chat().name=$('name').value.trim()||'Sem título');
 $('contact').onchange=()=>change(()=>chat().person=$('contact').value);
-$('composer').onsubmit=async e=>{e.preventDefault();const text=$('message').value.trim();if((!text&&!pendingImage)||!chat()||busy||imageLoading)return;await change(()=>{chat().messages.push({id:uid(),text,image:pendingImage,sender:settings().sender,time:settings().time});$('message').value='';clearAttachment();});$('message').focus();};
+$('composer').onsubmit=async e=>{e.preventDefault();const text=$('message').value.trim();if((!text&&!pendingImage)||!chat()||busy||imageLoading)return;await change(()=>{chat().messages.push({id:uid(),text,image:pendingImage,sender:settings().sender,time:settings().time});$('message').value='';clearAttachment();});$('messages').scrollTop=$('messages').scrollHeight;$('message').focus();};
 $('message').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&window.matchMedia('(pointer:fine)').matches){e.preventDefault();$('composer').requestSubmit();}};
 function clearAttachment(){pendingImage=null;$('attachmentPreview').hidden=true;$('attachmentPreview').replaceChildren();$('imageFile').value='';}
 $('attach').onclick=()=>$('imageFile').click();
