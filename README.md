@@ -4,7 +4,7 @@ Editor pessoal de conversas fictícias, estático e compatível com GitHub Pages
 
 ## Experimentar
 
-Sirva esta pasta com um servidor HTTP local (ex.: `npx --yes http-server .`). Sem configurar o Supabase, o app salva apenas neste navegador. Não existe sincronização entre dispositivos no modo local. Faça backup pelo botão Conectar Supabase.
+Sirva esta pasta com um servidor HTTP local (ex.: `npx --yes http-server .`). Sem configurar o Supabase, o app salva apenas neste navegador. Não existe sincronização entre dispositivos no modo local.
 
 ## Supabase — configurar uma única usuária
 
@@ -22,7 +22,7 @@ Cada salvamento envia o espaço completo. Evite editar simultaneamente em duas a
 2. Settings → Pages → Deploy from a branch → main → / (root) → Save.
 3. Acesse a URL informada pelo GitHub. Os caminhos são relativos e funcionam em subpastas de repositórios.
 
-O site é público; as conversas na nuvem exigem autenticação. Não coloque backups com histórias no repositório.
+O site é público; as conversas na nuvem exigem autenticação.
 
 ## Estado de validação
 
