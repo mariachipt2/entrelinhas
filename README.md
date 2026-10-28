@@ -42,3 +42,6 @@ Envio: toque curto na seta envia com o remetente atual. Segure a seta por meio s
 
 Interface: o site abre na lista de conversas. Toque em um contato para abrir o chat e use a seta para voltar. A engrenagem da lista abre as configurações; Aparência e preferências contém o tema claro/escuro. A interface ocupa a janela inteira, sem moldura de celular.
 
+
+Inserir fala: segure uma mensagem e escolha Adicionar antes ou Adicionar depois. Digite no campo habitual e envie; a nova fala entra na posição escolhida. O aviso acima do campo permite cancelar a inserção sem apagar o rascunho. Também funciona com imagens e com a escolha de remetente ao segurar a seta.
+
