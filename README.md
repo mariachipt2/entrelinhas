@@ -39,3 +39,6 @@ Conexão real e políticas precisam ser verificadas após configurar seu projeto
 Atualizações: publique index.html, app.js, style.css e export.js. Preserve o config.js que já contém sua configuração. Não é necessário alterar a tabela SQL existente.
 
 Envio: toque curto na seta envia com o remetente atual. Segure a seta por meio segundo para abrir a escolha de remetente; selecionar envia a mensagem. Cancelar mantém o rascunho. Sem mensagem, a escolha apenas define o remetente das próximas mensagens. Pelo teclado, a seta para cima no botão de envio abre o mesmo menu.
+
+Interface: o site abre na lista de conversas. Toque em um contato para abrir o chat e use a seta para voltar. A engrenagem da lista abre as configurações; Aparência e preferências contém o tema claro/escuro. A interface ocupa a janela inteira, sem moldura de celular.
+
