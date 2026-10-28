@@ -1,6 +1,6 @@
 # Entrelinhas
 
-Editor pessoal de conversas fictícias, estático e compatível com GitHub Pages. Interface em português, personagens, conversas, mensagens recebidas/enviadas, edição/exclusão, horário e modo print. Fotos e exportação automática como imagem ainda não estão implementadas; use captura de tela no modo print.
+Editor pessoal de conversas fictícias, estático e compatível com GitHub Pages. Interface em português, personagens, conversas, mensagens recebidas/enviadas, edição/exclusão, horário e modo print. Escreva diretamente no campo da conversa. Segure uma mensagem para escolher quem enviou, editar ou excluir. O botão + permite anexar JPG, PNG ou WebP de até 12 MB; o app reduz a imagem para até 1280 px antes de salvar. Imagens ficam junto das conversas no mesmo JSON protegido do Supabase, sem bucket adicional. Configure o horário e o remetente padrão em Configurações gerais. Use captura de tela no modo print.
 
 ## Experimentar
 
